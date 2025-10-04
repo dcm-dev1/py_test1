@@ -1,0 +1,2 @@
+# Dependencias del proyecto
+pygame>=2.5.0
