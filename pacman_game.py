@@ -130,11 +130,14 @@ class Ghost:
         pygame.draw.circle(screen, self.color, (center_x, center_y), self.radius)
 
 class PacmanGame:
-    def __init__(self):
+    def __init__(self, god_mode=False):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Pacman Game")
         self.clock = pygame.time.Clock()
         self.running = True
+        
+        # Modo dios - deshabilita el daño
+        self.god_mode = god_mode
         
         # Crear laberinto simple
         self.maze = self.create_maze()
@@ -222,17 +225,18 @@ class PacmanGame:
             self.pellets.remove((pacman_grid_x, pacman_grid_y))
             self.score += 10
         
-        # Verificar colisiones con fantasmas
-        for ghost in self.ghosts:
-            distance = ((self.pacman.x - ghost.x)**2 + (self.pacman.y - ghost.y)**2)**0.5
-            if distance < 0.5:
-                self.lives -= 1
-                if self.lives <= 0:
-                    self.game_over()
-                else:
-                    # Resetear posición de Pacman
-                    self.pacman.x = 1
-                    self.pacman.y = 1
+        # Verificar colisiones con fantasmas (solo si no está en modo dios)
+        if not self.god_mode:
+            for ghost in self.ghosts:
+                distance = ((self.pacman.x - ghost.x)**2 + (self.pacman.y - ghost.y)**2)**0.5
+                if distance < 0.5:
+                    self.lives -= 1
+                    if self.lives <= 0:
+                        self.game_over()
+                    else:
+                        # Resetear posición de Pacman
+                        self.pacman.x = 1
+                        self.pacman.y = 1
         
         # Verificar victoria
         if len(self.pellets) == 0:
@@ -266,6 +270,11 @@ class PacmanGame:
         lives_text = self.font.render(f"Lives: {self.lives}", True, WHITE)
         self.screen.blit(score_text, (10, 10))
         self.screen.blit(lives_text, (10, 50))
+        
+        # Mostrar modo dios si está activo
+        if self.god_mode:
+            god_text = self.font.render("GOD MODE", True, GREEN)
+            self.screen.blit(god_text, (10, 90))
         
         pygame.display.flip()
     
@@ -322,15 +331,24 @@ class PacmanGame:
 
 def main():
     """Función principal"""
+    import sys
+    
+    # Verificar argumentos de línea de comandos
+    god_mode = "--god" in sys.argv or "-g" in sys.argv
+    
     print("¡Bienvenido al juego de Pacman!")
     print("Controles:")
     print("- Usa las flechas del teclado para mover a Pacman")
     print("- Recoge todos los puntos blancos para ganar")
     print("- Evita a los fantasmas")
     print("- Presiona ESC para salir")
+    
+    if god_mode:
+        print("- ¡MODO DIOS ACTIVADO! Los fantasmas no te harán daño")
+    
     print("\n¡Que comience el juego!")
     
-    game = PacmanGame()
+    game = PacmanGame(god_mode=god_mode)
     game.run()
 
 if __name__ == "__main__":

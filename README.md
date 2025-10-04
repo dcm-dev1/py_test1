@@ -12,6 +12,8 @@ Este proyecto incluye:
 - Documentación completa
 - Sistema de pruebas unitarias
 
+![alpha-version](docs/assets/pacman-alpha.PNG)
+
 ## Instalación
 
 1. Clona el repositorio:
